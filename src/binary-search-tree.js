@@ -17,73 +17,80 @@ class BinarySearchTree {
   }
 
   add(data) {
-    this.rootNF = addWithin(this.rootNF, data)
-    function addWithin(node, data) {
-      if(!node) {
+    this.rootNF = addData(this.rootNF, data)
+    function addData(el, data) {
+      if(!el) {
         return new Node(data)
-      }
-      if(node.data === data) {
-        return node
-      }
-      if(data < node.data) {
-        node.left = addWithin(node.left, data)
+      } else if(el.data === data) {
+        return el
+      } else if(data < el.data) {
+        el.left = addData(el.left, data)
       } else {
-        node.right = addWithin(node.right, data)
+        el.right = addData(el.right, data)
       }
-      return node
+      return el
     }
   }
 
   has(data) {
-    return searchWithin(this.rootNF, data)
-    function searchWithin(node, data) {
-      if(!node) {
+    function searchData(el, data) {
+      if(!el) {
         return false
-      }
-      if(node.data === data) {
+      } else if(el.data === data) {
         return true
+      } else if(data < el.data) {
+        return searchData(el.left, data)
+      } else {
+        return searchData(el.right, data)
       }
-      return data < node.data ? searchWithin(node.left, data) : searchWithin(node.right, data)
     }
+    return searchData(this.rootNF, data)
   }
 
-  find(/* data */) {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  find(data) {
+    function findData(el, data) {
+      if(!el) {
+        return null
+      } else if(el.data === data) {
+        return el
+      } else if(data < el.data) {
+        return findData(el.left, data)
+      } else {
+        return findData(el.right, data)
+      }
+    }
+    return findData(this.rootNF, data)
   }
 
   remove(data) {
-    this.rootNF = removeNode(this.rootNF, data)
-
-    function removeNode(node, data) {
-      if(!node) {
+    this.rootNF = removeData(this.rootNF, data)
+    function removeData(el, data) {
+      if(!el) {
         return null
-      }
-      if(data < node.data) {
-        node.left = removeNode(node.left, data)
-        return node
-      } else if(data > node.data) {
-        node.right = removeNode(node.right, data)
-        return node
+      } else if(data < el.data) {
+        el.left = removeData(el.left, data)
+        return el
+      } else if(data > el.data) {
+        el.right = removeData(el.right, data)
+        return el
       } else {
-        if(!node.left && !node.right) {
+        if(!el.left && !el.right) {
           return null
+        } else if(!el.left) {
+          el = el.right
+          return el
+        } else if(!el.right) {
+          el = el.left
+          return el
+        } else {
+          let minFromRight = el.right
+          while(minFromRight.left) {
+            minFromRight = minFromRight.left
+          }
+          el.data = minFromRight.data
+          el.right = removeData(el.right, minFromRight.data)
+          return el
         }
-        if(!node.left) {
-          node = node.right
-          return node
-        }
-        if(!node.right) {
-          node = node.left
-          return node
-        }
-        let minFromRight = node.right
-        while(minFromRight.left) {
-          minFromRight = minFromRight.left
-        }
-        node.data = minFromRight.data
-        node.right = removeNode(node.right, minFromRight.data)
-        return node
       }
     }
   }
@@ -110,19 +117,6 @@ class BinarySearchTree {
     return el.data
   }
 }
-
-// const tree = new BinarySearchTree()
-// tree.add(9);
-// tree.add(14);
-// tree.add(54);
-// tree.add(2);
-// tree.add(6);
-// tree.add(8);
-// tree.add(31);
-// tree.add(1);
-// tree.remove(6);
-// tree.remove(2);
-// console.log(tree.root().data)
 
 module.exports = {
   BinarySearchTree
